@@ -1,1 +1,1 @@
-# LeetSync
+# Leetcode
