@@ -1,36 +1,60 @@
+class DisjointSet:
+    # Funtion to declare instance of DisjointSet Class
+    def __init__(self, num_nodes):
+        self.num_nodes = num_nodes
+        self.parent = [node for node in range(num_nodes)]
+        self.size = [1 for _ in range(num_nodes)]
+
+    # Funtion to find Ultimate Parent of node
+    def findUPar(self, node):
+        if self.parent[node] == node:
+            return node
+        else:
+            # Path compression
+            self.parent[node] = self.findUPar(self.parent[node])
+            return self.parent[node]
+
+    # Funtion to Join 2 Nodes
+    def unionBySize(self, u, v):
+        ultPar_u = self.findUPar(u)
+        ultPar_v = self.findUPar(v)
+
+        # Return if u and v already in same set of nodes
+        if ultPar_u == ultPar_v:
+            return 
+
+        # Union By Size
+        if self.size[ultPar_u] < self.size[ultPar_v]:
+            self.parent[ultPar_u] = ultPar_v
+            self.size[ultPar_v] += self.size[ultPar_u]
+        else:
+            self.parent[ultPar_v] = ultPar_u
+            self.size[ultPar_u] += self.size[ultPar_v]
+
+    
 class Solution:
-    def dfs(self, node, visited, adj):
-        # Visit the node
-        visited[node] = 1
-
-        # Call dfs for all adjacent unvisited nodes
-        for neighbor in adj[node]:
-            if not visited[neighbor]:
-                self.dfs(neighbor, visited, adj)
-
     def makeConnected(self, n: int, connections: List[List[int]]) -> int:
-        #*********** Using Traversal *************#
-        
-        # Return if number of edges is less than number of nodes-1
-        if len(connections) < n-1:
-            return -1
+        ########## USING DISJOINT SET DATA STRUCTURE ##############
 
-        # Create adjacency list for dfs
-        adj = [[] for _ in range(n)]
-        for u, v, in connections:
-            adj[u].append(v)
-            adj[v].append(u)
+        # Declare a Disjoint class instance
+        ds = DisjointSet(n)
 
-        # Visitied array to keep track of visited nodes
-        visited = [0 for _ in range(n)]
+        # Count extra edges
+        extraEdges = 0
+        for u, v in connections:
+            if ds.findUPar(u) == ds.findUPar(v):
+                extraEdges += 1
+            else:
+                ds.unionBySize(u, v) 
 
-        # Count number of islands using dfs
-        count = 0
+        # Count number of components
+        components = 0
         for node in range(n):
-            if not visited[node]:
-                self.dfs(node, visited, adj)
-                count += 1
+            if ds.parent[node] == node:
+                components += 1
 
-        # Return number of operations needed
-        return count-1
-
+        # Return conditions
+        if components-1 <= extraEdges:
+            return components-1
+        else:
+            return -1
