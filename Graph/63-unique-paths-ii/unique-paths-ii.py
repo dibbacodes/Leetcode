@@ -59,7 +59,48 @@ class Solution:
                 dp[row][col] = left + up
 
         return dp[0][0]
+
+    def spaceOptHelper(self, grid):
+        ## Dimensions of grid
+        nrows = len(grid)
+        ncols = len(grid[0])
+
+        ## Return 0: if impossible to reach end
+        if grid[nrows-1][ncols-1] == 1 or grid[0][0] == 1:
+            return 0
         
+        ## Initialize arrays
+        next = [0]*ncols
+        curr = [0]*ncols
+
+        ## Base case
+        next[ncols-1] = 1
+
+        ## Iterate through all cells in grid
+        for row in range(nrows-1, -1, -1):
+            for col in range(ncols-1, -1, -1):
+
+                if row == nrows-1 and col == ncols-1:
+                    curr[col] = next[col]
+                    continue
+
+                ## Calculate all possible cases
+                left = 0
+                if col+1 < ncols and not grid[row][col+1] :
+                    left = curr[col+1]
+
+                up = 0
+                if row+1 < nrows and not grid[row+1][col]:
+                    up = next[col]
+
+                curr[col] = left + up
+            
+            next = curr
+
+        return next[0]
+
+        ## Base Cases
+        dp[nrows-1][ncols-1] = 1 
 
     def uniquePathsWithObstacles(self, grid: List[List[int]]) -> int:
         ########## MEMOIZATION ##########
@@ -79,4 +120,7 @@ class Solution:
         # return self.memoHelper(0, 0, grid, nrows, ncols, dp)
 
         ########## TABULATION ##########
-        return self.tabHelper(grid)
+        # return self.tabHelper(grid)
+
+        ########## SPACE OPTIMIZATION #########
+        return self.spaceOptHelper(grid)
