@@ -22,11 +22,42 @@ class Solution:
         dp[row][col] = right + down
         return dp[row][col]
 
+    def tabulationHelper(self, m, n):
+        # Initialize dp array
+        dp = [[0]*n for _ in range(m)]
+
+        # Base Cases
+        dp[m-1][n-1] = 1 # One way to reach from end to end
+
+        # Iterate through all cases
+        for row in range(m-1, -1, -1):
+            for col in range(n-1, -1, -1):
+                # If last cell: Skip
+                if row == m-1 and col == n-1:
+                    continue
+                
+                # left
+                left = 0
+                if col+1 < n:
+                    left = dp[row][col+1]
+                
+                # right
+                up = 0
+                if row+1 < m:
+                    up = dp[row+1][col]
+
+                dp[row][col] = left + up
+
+        return dp[0][0]
+
     def uniquePaths(self, m: int, n: int) -> int:
         #### MEMOIZATION ####
 
-        # Initialize dp array
-        dp = [[-1]*n for _ in range(m)]
+        # # Initialize dp array
+        # dp = [[-1]*n for _ in range(m)]
 
-        # Call helper function and return the answer
-        return self.memoHelper(0, 0, m, n, dp)
+        # # Call helper function and return the answer
+        # return self.memoHelper(0, 0, m, n, dp)
+
+        ##### TABULATION #####
+        return self.tabulationHelper(m, n)
