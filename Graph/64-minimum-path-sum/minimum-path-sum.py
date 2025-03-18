@@ -49,6 +49,33 @@ class Solution:
 
         return dp[0][0] 
 
+    def spaceOptHelper(self, grid):
+        ## Grid dimension
+        nrows = len(grid)
+        ncols = len(grid[0])
+
+        ## Initialize arrays
+        curr = [self.INF for _ in range(ncols)]
+        ahead = [self.INF for _ in range(ncols)]
+
+        ## Iterate through all cells of grid
+        for row in range(nrows-1, -1, -1):
+            for col in range(ncols-1, -1, -1):
+                # Base Case: Only one way from last cell to last cell
+                if row == nrows-1 and col == ncols-1:
+                    curr[col] = grid[row][col]
+                    continue
+
+                # Calculate all possible options
+                right = grid[row][col] + curr[col+1] if col+1 < ncols else self.INF
+                down = grid[row][col] + ahead[col] if row+1 < nrows else self.INF
+
+                # Update dp with min vale
+                curr[col] = min(right, down)
+            
+            ahead = curr
+
+        return ahead[0] 
 
     def minPathSum(self, grid: List[List[int]]) -> int:
         ######## MEMOIZATION ########
@@ -64,4 +91,7 @@ class Solution:
         # return self.memoHelper(0, 0, grid, nrows, ncols, dp)
 
         ######## TABULATION ########
-        return self.tabulationHelper(grid)
+        # return self.tabulationHelper(grid)
+
+        ######## TABULATION ########
+        return self.spaceOptHelper(grid)
