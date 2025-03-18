@@ -50,7 +50,35 @@ class Solution:
 
         return min(dp[0])
 
-        
+    def spaceOptHelper(self, matrix):
+                ## Matrix Dimensions
+        nrows = len(matrix)
+        ncols = len(matrix[0])
+
+        ## Initialize arrays
+        ahead = [self.INF for _ in range(ncols)]
+        curr = [self.INF for _ in range(ncols)]
+
+        ## Iterate through all options
+        answer = self.INF
+        for row in range(nrows-1, -1, -1):
+            for col in range(ncols-1, -1, -1):
+                ## Base Case: Last Row
+                if row == nrows-1:
+                    curr[col] = matrix[row][col]
+                    continue
+
+                ## Calculate all possible cases
+                left = matrix[row][col] + ahead[col-1] if col-1 >= 0 else self.INF
+                right = matrix[row][col] + ahead[col+1] if col+1 < ncols else self.INF
+                down = matrix[row][col] + ahead[col]
+
+                ## Update cell value in dp table
+                curr[col] = min(left, right, down)
+
+            ahead = curr
+
+        return min(dp[0])
 
     def minFallingPathSum(self, matrix: List[List[int]]) -> int:
         ############### MEMOIZATION ###############
@@ -71,3 +99,6 @@ class Solution:
 
         ############ TABULATION ############
         return self.tabulationHelper(matrix)
+
+        ########### SPACE OPTIMIZATION ############
+        return self.spaceOptHelper(matrix)
