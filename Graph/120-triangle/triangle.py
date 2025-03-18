@@ -41,6 +41,32 @@ class Solution:
 
         return dp[row][col]
 
+    def spaceOptHelper(self, triangle):
+        ## Triangle Dimensions
+        nrows = len(triangle)
+
+        ## Initialize arrays
+        curr = [self.INF for _ in range(nrows)]
+        ahead = [self.INF for _ in range(nrows)]
+
+        ## Iterate through all possible options
+        for row in range(nrows-1, -1, -1):
+            for col in range(row, -1, -1):
+                # Base Case: Last Row
+                if row == nrows-1:
+                    curr[col] = triangle[row][col]
+                    continue
+
+                # Calculate all possible cases
+                down = triangle[row][col] + ahead[col]
+                up = triangle[row][col] + ahead[col+1]
+        
+                # Update dp cell with min value
+                curr[col] = min(down, up)
+            
+            ahead = curr.copy()
+
+        return ahead[0]
 
     def minimumTotal(self, triangle: List[List[int]]) -> int:
         # ########## MEMOIZATION #############
@@ -53,5 +79,8 @@ class Solution:
         # ## Call memoHelper and return answer
         # return self.memoHelper(0, 0, triangle, dp, nrows)
 
-        ########## TABULATION ##########
-        return self.tabulationHelper(triangle)
+        # ########## TABULATION ##########
+        # return self.tabulationHelper(triangle)
+
+        ########## Space Optimization ##########
+        return self.spaceOptHelper(triangle)
