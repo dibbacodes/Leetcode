@@ -40,7 +40,7 @@ class Solution:
                 ## Calculate all possible options
                 take = 1 + dp[index][target-coins[index]] if target >= coins[index] else self.INF
                 not_take = 0 + dp[index+1][target] 
-                
+
                 ## Update dp table
                 dp[index][target] = min(take, not_take)
 
@@ -48,6 +48,37 @@ class Solution:
             return -1
         else:
             return dp[0][amount]
+
+    def spaceOptHelper(self, coins, amount):
+        ## Number of coins 
+        n = len(coins)
+
+        ## Initialize arrays
+        ahead = [self.INF for _ in range(amount+1)]
+        curr = [self.INF for _ in range(amount+1)]
+
+        ## Base Case: Assign values to last row (ahead)
+        for target in range(amount+1):
+            if target % coins[n-1] == 0:
+                ahead[target] = target//coins[n-1]
+
+        ## Iterate over the array
+        for index in range(n-2, -1, -1):
+            for target in range(0, amount+1):
+                ## Calculate all possible options
+                take = 1 + curr[target-coins[index]] if target >= coins[index] else self.INF
+                not_take = 0 + ahead[target] 
+
+                ## Update curr
+                curr[target] = min(take, not_take)
+
+            ahead = curr.copy()
+
+        if ahead[amount] >= self.INF:
+            return -1
+        else:
+            return ahead[amount]
+
 
     def coinChange(self, coins: List[int], amount: int) -> int:
         ######### MEMOIZATION ########
@@ -62,7 +93,10 @@ class Solution:
         # result = self.memoHelper(0, amount, coins, dp, n)
         # return result if result != 1e9 else -1
 
-        ###### TABULTION ######
-        return self.tabulationHelper(coins, amount)
+        # ###### TABULTION ######
+        # return self.tabulationHelper(coins, amount)
+
+        ######### SPACE OPTIMIZATION #########
+        return self.spaceOptHelper(coins, amount)
 
         
