@@ -42,6 +42,32 @@ class Solution:
 
         return dp[0][target]
 
+    def spaceOptHelper(self, amount, coins):
+        ## Size of arrays coins:
+        n = len(coins)
+
+        ## Initialize the base case array: ahead
+        ahead = [0*(amount+1) for _ in range(amount+1)]
+
+        ## Base Cases
+        # When no more coins are there to be taken
+        ahead[0] = 1
+
+        ## Iterate over the array
+        for index in range(n-1, -1, -1):
+            curr = [0 for _ in range(amount+1)]
+            for target in range(0, amount+1):
+                ## Calculate all possible cases
+                take = curr[target-coins[index]] if target >= coins[index] else 0
+                notTake = ahead[target]
+
+                ## Update dp table
+                curr[target] = take + notTake
+
+            ahead = curr.copy()
+
+        return ahead[target]
+
     def change(self, amount: int, coins: List[int]) -> int:
         ####### MEMOIZATION ######
 
@@ -54,5 +80,8 @@ class Solution:
         # ## Call memoHelper and return answer
         # return self.memoHelper(0, amount, dp, coins, n)
 
-        ######## TABULATION ########
-        return self.tabulationHelper(amount, coins)
+        # ######## TABULATION ########
+        # return self.tabulationHelper(amount, coins)
+
+        ######## SPACE OPTIMIZATION ########
+        return self.spaceOptHelper(amount, coins)
