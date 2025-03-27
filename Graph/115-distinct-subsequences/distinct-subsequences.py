@@ -32,6 +32,36 @@ class Solution:
             dp[index1][index2] = notTake
             return dp[index1][index2]
 
+    def spaceOptHelper(self, string1, string2):
+        ## Length of strings 
+        l1 = len(string1)
+        l2 = len(string2)
+
+        ## Initialise base case array: ahead
+        ahead = [1]*(l2+1)
+
+        ## Iterate over the strings
+        for index1 in range(l1-1, -1, -1):
+            curr = [0]*(l2+1)
+            for index2 in range(l2-1, -1, -1):
+                ## Calculate all possible cases
+                # Letters Match
+                if string1[index1] == string2[index2]:
+                    take = ahead[index2+1]
+                    notTake = curr[index2+1]
+
+                    # Update curr
+                    curr[index2] = take + notTake
+
+                # Letters don't match
+                else:
+                    notTake = curr[index2+1]
+                    curr[index2] = notTake
+
+            ahead = curr.copy()
+
+        return ahead[0]
+
     def numDistinct(self, string2: str, string1: str) -> int:
         ## Length of strings 
         l1 = len(string1)
@@ -41,4 +71,7 @@ class Solution:
         dp = [[-1]*(l2+1) for _ in range(l1+1)]
 
         ## Call memoHelper and return 
-        return self.memoHelper(0, 0, string1, string2, dp)
+        # return self.memoHelper(0, 0, string1, string2, dp)
+
+        ##### SPACE OPTIMIZATIONS #####
+        return self.spaceOptHelper(string1, string2)
