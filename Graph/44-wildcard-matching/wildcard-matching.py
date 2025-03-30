@@ -41,6 +41,44 @@ class Solution:
             dp[index1][index2] = 0
             return 0
 
+    def tabulationHelper(self, string1, string2):
+        ## Length of strings
+        l1 = len(string1)
+        l2 = len(string2)
+
+        ## Initalize dp array
+        dp = [[0]*(l2+1) for _ in range(l1+1)] 
+
+        ## Base cases  
+        dp[l1][l2] = 1
+
+        for index2 in range(l2-1, -1, -1):
+            if string2[index2] != '*':
+                break
+            else:
+                dp[l1][index2] = 1
+        
+        ## Iterate over the strings
+        for index1 in range(l1-1, -1, -1):
+            for index2 in range(l2-1, -1, -1):
+                ## Calculate all possible cases
+                # Letters match or '?'
+                if string1[index1] == string2[index2] or string2[index2] == '?':
+                    dp[index1][index2] = dp[index1+1][index2+1]
+
+                # Letters is '*'
+                elif string2[index2] == '*':
+                    notTake = dp[index1][index2+1]
+                    take = dp[index1+1][index2]
+
+                    dp[index1][index2] = max(take, notTake)
+
+                # Letters can't match
+                else:
+                    dp[index1][index2] = 0
+
+        return dp[0][0]
+
     def isMatch(self, string1: str, string2: str) -> bool:
         ## Length of strings
         l1 = len(string1)
@@ -49,5 +87,8 @@ class Solution:
         ## Initalize dp array
         dp = [[-1]*(l2+1) for _ in range(l1+1)]
 
-        ## Call memeHelper and return
-        return bool(self.memoHelper(0, 0, string1, string2, dp))   
+        ## Call memoHelper and return
+        # return bool(self.memoHelper(0, 0, string1, string2, dp))  
+
+        ###### TABULATION #######
+        return bool(self.tabulationHelper(string1, string2))
