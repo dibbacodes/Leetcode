@@ -25,15 +25,48 @@ class Solution:
 
             dp[index][canBuy][limit] = max(sell, dontSell)
             return dp[index][canBuy][limit]
+
+    def tabulationHelper(self, prices):
+        ## Length of array
+        n = len(prices)
+
+        ## Initialize dp array
+        dp = [[[0] * 3 for _ in range(2)] for _ in range(n+1)]
+
+        ## Base Cases
+        # dp[n][canBuy][limit] = 0
+        # dp[index][canBuy][0] = 0
+
+        ## Iterate over the array
+        for index in range (n-1, -1, -1):
+            for canBuy in range(1, -1, -1):
+                for limit in range(2, 0, -1):
+                    ## Calculate all possible cases
+                    if canBuy:
+                        buy = -prices[index] + dp[index+1][0][limit]
+                        dontBuy = dp[index+1][canBuy][limit]
+
+                        dp[index][canBuy][limit] = max(buy, dontBuy)
+
+                    else:
+                        sell = prices[index] + dp[index+1][1][limit-1]
+                        dontSell = dp[index+1][0][limit]
+
+                        dp[index][canBuy][limit] = max(sell, dontSell)
+            
+        return dp[0][1][2]
         
     def maxProfit(self, prices: List[int]) -> int:
         ####### MEMOIZATION #########
 
         ## Length of array
-        n = len(prices)
+        # n = len(prices)
 
-        ## Initialize dp array
-        dp = [[[-1] * 3 for _ in range(2)] for _ in range(n+1)]
+        # ## Initialize dp array
+        # dp = [[[-1] * 3 for _ in range(2)] for _ in range(n+1)]
 
-        ## Call memoHelper and return answer
-        return self.memoHelper(0, 1, 2, prices, dp, n)
+        # ## Call memoHelper and return answer
+        # return self.memoHelper(0, 1, 2, prices, dp, n)
+
+        ###### SPACE OPTIMIZATION ######
+        return self.tabulationHelper(prices)
