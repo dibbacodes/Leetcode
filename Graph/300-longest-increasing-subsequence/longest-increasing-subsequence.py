@@ -78,7 +78,25 @@ class Solution:
 
         return maxLen
 
-        
+    import bisect
+    def binarySearchHelper(self, nums):
+        ## Length of array
+        n = len(nums)
+
+        ## Initialize temp
+        temp = []
+
+        ## Iterate over the array
+        for index in range(n):
+            if not temp or nums[index] > temp[-1]:
+                temp.append(nums[index])
+            else:
+                lowerBoundIndex = bisect.bisect_left(temp, nums[index])
+                temp[lowerBoundIndex] = nums[index]
+
+        ## Return LIS length
+        return len(temp)
+
 
     def lengthOfLIS(self, nums: List[int]) -> int:
         # ## Length of array
@@ -92,4 +110,4 @@ class Solution:
 
         # return self.tabulationHelper(nums)
 
-        return self.spaceOptHelper2(nums)
+        return self.binarySearchHelper(nums)
